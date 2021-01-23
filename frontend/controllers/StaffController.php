@@ -8,7 +8,9 @@ use app\models\StaffSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-
+use yii\rbac\DbManager;
+use kartik\form\ActiveForm;
+use app\models\AuthAssignment;
 /**
  * StaffController implements the CRUD actions for Staff model.
  */
@@ -65,12 +67,46 @@ class StaffController extends Controller
     public function actionCreate()
     {
         $model = new Staff();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ( Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) ) {
+            // die;
+            Yii::$app->response->format = 'json';
+            return ActiveForm::validate($model);
         }
 
-        return $this->render('create', [
+        if ($model->load(Yii::$app->request->post()) ) {
+            $transaction = Yii::$app->db->beginTransaction();
+            $user_id = $model->signup();
+            if(!$user_id){
+                // Yii::$app->session->set('toast', 'Failed to create user');
+                Yii::$app->session->setFlash('danger', 'Failed to create user');
+
+            }
+            else {
+                $auth = new DbManager;
+                $auth->init();
+                $role = $auth->getRole($model->name);
+                // echo $model->name;
+                // echo "<pre>";
+                // print_r($role);
+                // echo "</pre>";
+                // die;
+                $auth->assign($role, $user_id);
+                $model->user_id = $user_id;
+                $model->created_by = Yii::$app->user->id;
+                if($model->save(false)) {
+                    $transaction->commit();
+                    Yii::$app->session->setFlash('success', 'User created Successfully !!');
+                }
+                else{
+                    Yii::$app->session->setFlash("danger","Failed to create user, some error has occured");
+                    $transaction->rollback();
+                    print_r($model->errors);die;
+                }
+                return $this->redirect(['staff/index']);
+            } 
+        }
+
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -85,14 +121,53 @@ class StaffController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $authManager = new \Yii::$app->authManager();
+        $user_id = $model->user_id;
+        $getRole = $authManager->getRolesByUser($user_id);
+        $role_name = array_keys($getRole)[0];
+        $model->name = $role_name;
+        //cannot change user name, it should be unique 
+        //if ( Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) ) {
+        //     Yii::$app->response->format = 'json';
+        //     return ActiveForm::validate($model);
+        // }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            $transaction = Yii::$app->db->beginTransaction();
+            if($model->name != $role_name) {
+                $new_role = $authManager->getRole($model->name);
+                $old_role = $authManager->getRole($role_name);
+                $authManager->revoke($old_role,$user_id);
+                $authManager->assign($new_role,$user_id);
+            }
+            if(!$model->save()) {
+                print_r($model->errors);
+            }
+            else{
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', 'User updated Successfully !!');
+            }
+            return $this->redirect(['staff/index']);
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
+    }
+
+    public function actionResetpassword($id){
+        $staff = $this->findModel($id);
+        $user = \common\models\User::findOne($staff->user_id);
+        if ($staff->load(Yii::$app->request->post()) ) {
+            $user->setPassword($staff->password);
+            $user->save();
+            Yii::$app->session->setFlash("success","Password reset successfully");
+            return $this->redirect(['staff/index']);
+        }
+        return $this->render('_resetPassword', [
+            'model' => $staff,
+        ]);
+        
     }
 
     /**
@@ -104,8 +179,18 @@ class StaffController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $transaction = Yii::$app->db->beginTransaction();
+        $staff = $this->findModel($id);
+        $user = \common\models\User::findOne($staff->user_id);
+        if(!$user->delete()) {
+            $transaction->rollBack();
+            print_r($user->errors);die;
+        }
+        if(!$staff->delete()) {
+            $transaction->rollBack();
+            print_r($user->errors);die;
+        }
+        $transaction->commit();
         return $this->redirect(['index']);
     }
 

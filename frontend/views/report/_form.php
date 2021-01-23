@@ -1,7 +1,6 @@
 <?php
-use dosamigos\datepicker\DateRangePicker;
-use yii\widgets\ActiveForm;
-use yii\helpers\Html;
+use yii\helpers\Url;
+
 //$this->title = "Reports";
 
 
@@ -28,43 +27,25 @@ use yii\helpers\Html;
         <div class="col-md-3 label label-primary">
             <h4> Admission Report</h4>
         </div>
-      <br><br><br>
-      <?php $form = ActiveForm::begin([
-            'action' => ['index'],
-            'method' => 'get',
-        ]); ?>
-      <?= $form->field($model, 'start_date')->widget(DateRangePicker::className(), [
-            
-            'attributeTo' => 'end_date', 
-            // 'language' => 'ru',
-            'labelTo' => 'to',
-        //    'size' => 'lg',
-            
-            'clientOptions' => [
-                'autoclose' => true,
-                'format' => 'yyyy-mm-d',
-                
-                'todayHighlight' => true,
-            ]
-        ])->label('Select Date Range');?>                        
-        <button type="submit" id="btnSearch" class="btn btn-success" formtarget="_blank">Submit</button>
-        <?= Html::a('Reset', ['index'], ['class' => 'btn btn-primary','size'=>'sm', 'header'=>'Create Tax']) ?>
-    <?php ActiveForm::end(); ?>
-    
+        <br><br><br>
+        <?php echo $this->render('_search',['model'=>$model,'formName'=>'admission-form','button'=>'admin-button','div'=>'admin-report','url'=>Url::to(['admission']) ]); ?>
+        <div id="admin-report"></div>
     </div>
     <div id="menu1" class="tab-pane fade">
       <div class="col-md-3 label label-success">
             <h4> Monthly Fee Report</h4>
         </div>
         <br><br><br>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <?php echo $this->render('_search',['model'=>$model,'formName'=>'fees-form','button'=>'fees-button','div'=>'fee-report','url'=>Url::to(['fees']) ]); ?>
+        <div id="fee-report"></div>
     </div>
     <div id="menu2" class="tab-pane fade">
       <div class="col-md-3 label label-warning">
             <h4> Expenses Report</h4>
         </div>
         <br><br><br>
-      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+        <?php echo $this->render('_search',['model'=>$model,'formName'=>'expenses-form','button'=>'expenses-button','div'=>'expenses-report','url'=>Url::to(['expenses']) ]); ?>
+        <div id="expenses-report"></div>
     </div>
   </div>
 

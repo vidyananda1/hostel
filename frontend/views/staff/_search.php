@@ -19,13 +19,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'staff_name') ?>
 
-    <?= $form->field($model, 'phone') ?>
-
     <?= $form->field($model, 'address') ?>
 
-    <?= $form->field($model, 'user_id') ?>
+    <?= $form->field($model, 'phone') ?>
 
-    <?php // echo $form->field($model, 'created_by') ?>
+    <?= $form->field($model, 'created_by') ?>
 
     <?php // echo $form->field($model, 'created_date') ?>
 
