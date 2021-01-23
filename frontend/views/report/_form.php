@@ -44,7 +44,7 @@ use yii\helpers\Url;
             <h4> Expenses Report</h4>
         </div>
         <br><br><br>
-        <?php echo $this->render('_search',['model'=>$model,'formName'=>'expenses-form','button'=>'expenses-button','div'=>'expenses-report','url'=>Url::to(['expenses']) ]); ?>
+        <?php echo $this->render('_search',['model'=>$model ,'formName'=>'expenses-form','button'=>'expenses-button','div'=>'expenses-report','url'=>Url::to(['expenses']) ]); ?>
         <div id="expenses-report"></div>
     </div>
   </div>

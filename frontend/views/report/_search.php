@@ -19,14 +19,14 @@ use yii\helpers\Html;
     ]
 ]);?>                
           <button type="submit" id=<?=$button?> url=<?=$url ?> class="btn btn-success reportBtn"  formtarget="_blank">Submit</button>
-          <?= Html::a('Reset', ['index'], ['class' => 'btn btn-primary','size'=>'sm', 'header'=>'Create Tax']) ?>
+          <button type="input" id=<?=$button."reset"?>  class="btn btn-warning reportBtn"  >Reset</button>
       <?php ActiveForm::end(); ?>
 
-      <?php
-        // echo $div;die;
+<?php
 $this->registerJs('
 var button = "'.$button.'"; 
-
+var resetButton = "'.$button."reset".'"; 
+ 
 
 $(document).on("click",`#${button}`,function(){
   event.preventDefault();
@@ -41,15 +41,24 @@ $(document).on("click",`#${button}`,function(){
   var div ="'.$div.'"; 
 
   
-  console.log(startDate);
+ 
   // return false;
   if(!startDate || !endDate)
     return false;
 
   url = `${url}&startDate=${startDate}&endDate=${endDate}`;
 
-  console.log(url);
-  console.log(div);
   $(`#${div}`).load(url);
 });
+$(document).on("click",`#${resetButton}`,function(){
+  console.log("1");
+  event.preventDefault();
+  var form = "'.$formName.'";
+  form = $(`#${form}`);
+  var date = "'.date("Y-m-d").'";
+  var endDate = $(`input[name="name_to"]`,form).val(date); 
+  var startDate = $(`input[name="date_from"]`,form).val(date); 
+});
+
+
 ');
