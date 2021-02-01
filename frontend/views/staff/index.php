@@ -88,7 +88,7 @@ use yii\bootstrap\Modal;
 
 Modal::begin([
 
-            'header' => '<h4>Create Discount Category</h4>',
+            'header' => '<h4>Create Staff </h4>',
 
             'id' => 'jobPop',
 
@@ -106,7 +106,7 @@ Modal::begin([
 
 Modal::begin([
 
-            'header' => '<h4>Update Discount Category</h4>',
+            'header' => '<h4>Update Staff</h4>',
 
             'id' => 'jobPop1',
 
