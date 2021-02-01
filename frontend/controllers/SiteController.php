@@ -1,8 +1,8 @@
 <?php
 namespace frontend\controllers;
 
-use app\models\Counter;
 use app\models\Registration;
+use app\models\FeeCounter;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
@@ -53,15 +53,15 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        // $data_invested = Registration::find()->where(['record_status'=>1])->select('sum(invest_amount) as total,month(date) as month')->groupBy('month (date)')->asArray()->all();
-        // $data_interest = Counter::find()->where(['record_status'=>1])->select('sum(paid_amount) as total,month(date_of_payment) as month')->groupBy('month (date_of_payment)')->asArray()->all();
-        // $invested =$this->formatData($data_invested);
-        // $interests =$this->formatData($data_interest);
+        $data_invested = Registration::find()->where(['record_status'=>1])->select('sum(paid_amount) as total,month(date) as month')->groupBy('month (date)')->asArray()->all();
+        $data_interest = FeeCounter::find()->where(['record_status'=>1])->select('sum(amount_receive) as total,month(date) as month')->groupBy('month (date)')->asArray()->all();
+        $invested =$this->formatData($data_invested);
+        $interests =$this->formatData($data_interest);
         //echo "<pre>";print_r($invested);echo "<pre>";
-        // echo "<pre>";print_r($interest);echo "<pre>";die;
+       // echo "<pre>";print_r($interest);echo "<pre>";die;
         return $this->render('index',[
-            // 'invested'=>json_encode($invested),
-            // 'interests'=>json_encode($interests)
+            'invested'=>json_encode($invested),
+            'interests'=>json_encode($interests)
             ]);
     }
 

@@ -1,18 +1,17 @@
 
 <?php
 use app\models\Registration;
-use app\models\Member;
-use app\models\Counter;
+use app\models\FeeCounter;
  
 
 //use app\models\Counterno;
 
 $this->title = '';
 
-// $reg = Registration::find()->where(['record_status'=>'1'])->count();
+$reg = Registration::find()->where(['record_status'=>'1'])->count();
 // $mem = Member::find()->where(['record_status'=>'1'])->count();
-// $invested_amount = Registration::find()->where(['record_status'=>'1'])->sum('invest_amount');
-// $amount_paid = Counter::find()->where(['record_status'=>'1'])->sum('paid_amount');
+$admfee = Registration::find()->where(['record_status'=>'1'])->sum('paid_amount');
+$monthfee = FeeCounter::find()->where(['record_status'=>'1'])->sum('amount_receive');
 
 ?>
 
@@ -27,7 +26,7 @@ $this->title = '';
 
         <div class="info-box-content text-center" >
           <span class="info-box-text"style="text-align:center;font-family: 'Oregano';font-size: 18px;">Total Hostellers</span>
-          <span class="info-box-number" style="text-align:center;font-family: 'Oregano';font-size: 22px;">93,139</span>
+          <span class="info-box-number" style="text-align:center;font-family: 'Oregano';font-size: 22px;"><?= $reg ?></span>
         </div>
 
       </div>
@@ -40,7 +39,7 @@ $this->title = '';
 
         <div class="info-box-content text-center" >
           <span class="info-box-text"style="text-align:center;font-family: 'Oregano';font-size: 18px;">Admission Fee Amount</span>
-          <span class="info-box-number" style="text-align:center;font-family: 'Oregano';font-size: 22px;">Rs 93,139</span>
+          <span class="info-box-number" style="text-align:center;font-family: 'Oregano';font-size: 22px;">Rs <?= $admfee ?></span>
         </div>
 
       </div>
@@ -54,7 +53,7 @@ $this->title = '';
 
         <div class="info-box-content text-center" >
           <span class="info-box-text"style="text-align:center;font-family: 'Oregano';font-size: 18px;">Monthly Fee Amount</span>
-          <span class="info-box-number" style="text-align:center;font-family: 'Oregano';font-size: 22px;">Rs 93,139</span>
+          <span class="info-box-number" style="text-align:center;font-family: 'Oregano';font-size: 22px;">Rs <?= $monthfee ?></span>
         </div>
 
       </div>
@@ -106,8 +105,8 @@ google.charts.setOnLoadCallback(drawBasic);
 function drawBasic() {
   var columns=[];
   columns.push(["Month","Amount"]);
-  var invested = ;
-  var interests = ;
+  var invested =$invested ;
+  var interests = $interests ;
   invested = columns.concat(invested);
   interests = columns.concat(interests);
   
